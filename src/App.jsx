@@ -48,7 +48,6 @@ function App() {
   
   const [coords, setCoords] = useState(initialState);
   const [weather, setWeather] = useState({});
-  const [city, setCity] = useState('');
   
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition((possition) => {
@@ -67,8 +66,9 @@ function App() {
         const iconName = keys.find(key => conditionCodes[key].includes(res.data?.weather[0]?.id));
         const root = document.getElementById('root');
         root.style.backgroundImage = `url(${wallpapers[iconName]})`
+        console.log(res)
         setWeather({
-          city: city,
+          city: res.data?.name,
           country: res.data?.sys?.country,
           icon: icons[iconName],
           main: res.data?.weather[0]?.main,
