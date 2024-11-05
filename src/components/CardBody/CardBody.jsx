@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { temperature } from "../../assets/images";
+import { temperature } from "../../assets/images/icons";
 import CardInfo from "../CardInfo/CardInfo";
 import "./CardBody.css";
 

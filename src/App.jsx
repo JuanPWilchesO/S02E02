@@ -1,8 +1,9 @@
 import axios from "axios";
-import { useEffect, useState } from "react"
-import { thunderstormSvg, drizzleSvg, rainSvg, snowSvg, atmosphereSvg, clearSvg, cloudSvg } from "./assets/images";
+import { useEffect, useState } from "react";
+import { thunderstormSvg, drizzleSvg, rainSvg, snowSvg, atmosphereSvg, clearSvg, cloudSvg } from "./assets/images/icons";
+import { thunderstormWall, drizzleWall, rainWall, snowWall, atmosphereWall, clearWall, cloudWall } from './assets/images/wallpapers';
 import CardBody from "./components/CardBody/CardBody";
-import './App.css'
+import './App.css';
 
 const key = '514965591fa6eb92b1669bd08a8ef61f';
 
@@ -11,7 +12,7 @@ const url = 'https://api.openweathermap.org/data/2.5/weather';
 const initialState = {
   latitude: 0,
   longitude: 0
-}
+};
 
 const icons = {
   thunderstorm: thunderstormSvg,
@@ -21,7 +22,16 @@ const icons = {
   clear: clearSvg,
   atmosphere: atmosphereSvg,
   clouds: cloudSvg
-}
+};
+
+const wallpapers = {
+  thunderstorm: thunderstormWall,
+  drizzle: drizzleWall,
+  snow: snowWall,
+  clear: clearWall,
+  atmosphere: atmosphereWall,
+  clouds: cloudWall
+};
 
 const conditionCodes = {
   thunderstorm: [200, 201, 202, 210, 211, 212, 221, 230, 231, 232],
@@ -31,7 +41,7 @@ const conditionCodes = {
   atmosphere: [701, 711, 721, 731, 741, 751, 761, 762, 771, 781],
   clear: [800],
   clouds: [801, 802, 803, 804]
-}
+};
 
 function App() {
   
@@ -40,19 +50,21 @@ function App() {
   
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition((possition) => {
-      const { latitude, longitude } = possition.coords
+      const { latitude, longitude } = possition.coords;
       setCoords({ latitude, longitude });
     }, (error) => {
-      console.log("Rechazó")
+        console.log("Rechazó");
     });  
-  }, [])
-
+  }, []);
+  
   useEffect(() => {
     if(coords){
       axios.get(`${url}?lat=${coords.latitude}&lon=${coords.longitude}&appid=${key}`)
       .then((res) => {
-        const keys = Object.keys(conditionCodes)
+        const keys = Object.keys(conditionCodes);
         const iconName = keys.find(key => conditionCodes[key].includes(res.data?.weather[0]?.id));
+        const root = document.getElementById('root');
+        root.style.backgroundImage = `url(${wallpapers[iconName]})`
         setWeather({
           city: res.data.name,
           country: res.data?.sys?.country,
@@ -62,13 +74,13 @@ function App() {
           clouds: res.data?.clouds?.all,
           pressure: res.data?.main?.pressure,
           temperature: Math.round(res.data?.main?.temp - 273.15)
-        })
+        });
       })
       .catch((err) => {
-        console.log(err)
-      })
+          console.log(err);
+      });
     }
-  }, [coords])
+  }, [coords]);
 
 
   return (
@@ -77,7 +89,7 @@ function App() {
       <h2 className="card__subtitle">{ weather.city }, { weather.country }</h2>
       <CardBody weather = { weather }/>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
