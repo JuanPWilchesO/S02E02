@@ -27,6 +27,7 @@ const icons = {
 const wallpapers = {
   thunderstorm: thunderstormWall,
   drizzle: drizzleWall,
+  rain: rainWall,
   snow: snowWall,
   clear: clearWall,
   atmosphere: atmosphereWall,
@@ -47,6 +48,7 @@ function App() {
   
   const [coords, setCoords] = useState(initialState);
   const [weather, setWeather] = useState({});
+  const [city, setCity] = useState('');
   
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition((possition) => {
@@ -66,7 +68,7 @@ function App() {
         const root = document.getElementById('root');
         root.style.backgroundImage = `url(${wallpapers[iconName]})`
         setWeather({
-          city: res.data.name,
+          city: city,
           country: res.data?.sys?.country,
           icon: icons[iconName],
           main: res.data?.weather[0]?.main,
@@ -80,8 +82,8 @@ function App() {
           console.log(err);
       });
     }
+  
   }, [coords]);
-
 
   return (
     <div className="card">
