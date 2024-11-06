@@ -9,11 +9,6 @@ const key = '514965591fa6eb92b1669bd08a8ef61f';
 
 const url = 'https://api.openweathermap.org/data/2.5/weather';
 
-const initialState = {
-  latitude: 0,
-  longitude: 0
-};
-
 const icons = {
   thunderstorm: thunderstormSvg,
   drizzle: drizzleSvg,
@@ -46,8 +41,10 @@ const conditionCodes = {
 
 function App() {
   
-  const [coords, setCoords] = useState(initialState);
+  const [coords, setCoords] = useState(null);
   const [weather, setWeather] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [city, setCity] = useState('');
   
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition((possition) => {
@@ -60,15 +57,14 @@ function App() {
   
   useEffect(() => {
     if(coords){
+      setLoading(true);
       axios.get(`${url}?lat=${coords.latitude}&lon=${coords.longitude}&appid=${key}`)
       .then((res) => {
         const keys = Object.keys(conditionCodes);
         const iconName = keys.find(key => conditionCodes[key].includes(res.data?.weather[0]?.id));
         const root = document.getElementById('root');
-        root.style.backgroundImage = `url(${wallpapers[iconName]})`
-        console.log(res)
+        root.style.backgroundImage = `url(${wallpapers[iconName]})`;
         setWeather({
-          city: res.data?.name,
           country: res.data?.sys?.country,
           icon: icons[iconName],
           main: res.data?.weather[0]?.main,
@@ -80,16 +76,43 @@ function App() {
       })
       .catch((err) => {
           console.log(err);
-      });
+      })
+      .finally(() => {
+        setLoading(false)
+      })
     }
-  
+  }, [coords]);
+
+  useEffect(() => {
+    if(coords){
+      setLoading(true)
+      axios.get(`http://api.openweathermap.org/geo/1.0/reverse?lat=${coords.latitude}&lon=${coords.longitude}&limit=5&appid=${key}`)
+      .then(res => {
+        setCity(res?.data[0].name)
+      })
+      .catch((err) =>{
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+    }
   }, [coords]);
 
   return (
     <div className="card">
       <h1 className="card__title">Weather App</h1>
-      <h2 className="card__subtitle">{ weather.city }, { weather.country }</h2>
+      {
+      !coords || loading ?
+      <h2>...</h2> :
+      <h2 className="card__subtitle">{ city }, { weather.country }</h2>
+      }
+      { 
+      !coords || loading ? 
+      <h2>Loading</h2> :
       <CardBody weather = { weather }/>
+      }
+      
     </div>
   );
 }
