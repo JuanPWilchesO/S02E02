@@ -6,6 +6,7 @@ import CardBody from "./components/CardBody/CardBody";
 import './App.css';
 
 const key = '514965591fa6eb92b1669bd08a8ef61f';
+const cityKey = '05b00828fe530e9a7613c6c001a728f7';
 
 const url = 'https://api.openweathermap.org/data/2.5/weather';
 
@@ -86,7 +87,7 @@ function App() {
   useEffect(() => {
     if(coords){
       setLoading(true)
-      axios.get(`http://api.openweathermap.org/geo/1.0/reverse?lat=${coords.latitude}&lon=${coords.longitude}&limit=5&appid=${key}`)
+      axios.get(`http://api.openweathermap.org/geo/1.0/reverse?lat=${coords.latitude}&lon=${coords.longitude}&limit=5&appid=${cityKey}`)
       .then(res => {
         setCity(res?.data[0].name)
       })
