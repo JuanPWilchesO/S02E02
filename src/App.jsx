@@ -6,7 +6,6 @@ import CardBody from "./components/CardBody/CardBody";
 import './App.css';
 
 const key = '514965591fa6eb92b1669bd08a8ef61f';
-const cityKey = '05b00828fe530e9a7613c6c001a728f7';
 
 const url = 'https://api.openweathermap.org/data/2.5/weather';
 
@@ -45,7 +44,6 @@ function App() {
   const [coords, setCoords] = useState(null);
   const [weather, setWeather] = useState({});
   const [loading, setLoading] = useState(false);
-  const [city, setCity] = useState('');
   
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition((possition) => {
@@ -66,6 +64,7 @@ function App() {
         const root = document.getElementById('root');
         root.style.backgroundImage = `url(${wallpapers[iconName]})`;
         setWeather({
+          city: res.data?.name,
           country: res.data?.sys?.country,
           icon: icons[iconName],
           main: res.data?.weather[0]?.main,
@@ -84,29 +83,13 @@ function App() {
     }
   }, [coords]);
 
-  useEffect(() => {
-    if(coords){
-      setLoading(true)
-      axios.get(`http://api.openweathermap.org/geo/1.0/reverse?lat=${coords.latitude}&lon=${coords.longitude}&limit=5&appid=${cityKey}`)
-      .then(res => {
-        setCity(res?.data[0].name)
-      })
-      .catch((err) =>{
-        console.log(err)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-    }
-  }, [coords]);
-
   return (
     <div className="card">
       <h1 className="card__title">Weather App</h1>
       {
       !coords || loading ?
       <h2>...</h2> :
-      <h2 className="card__subtitle">{ city }, { weather.country }</h2>
+      <h2 className="card__subtitle">{weather.city}, { weather.country }</h2>
       }
       { 
       !coords || loading ? 
